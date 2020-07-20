@@ -48,3 +48,17 @@ Feature: Latest FX rates endpoint
       | HSB             | 400        | Symbols 'HSB' are invalid for date (current date or previous working day).             |
       | USD,ABC         | 400        | Symbols 'USD,ABC' are invalid for date (current date or previous working day).         |
       | HSB,ABC,CMB,SOC | 400        | Symbols 'HSB,ABC,CMB,SOC' are invalid for date (current date or previous working day). |
+
+  @latest @negative-tests @base
+  Scenario Outline: I hit latest FX rates endpoint of Rates API with invalid base parameter
+    When I set endpoint to latest
+    And I set base parameter to "<baseCurrencyInParameter>"
+    And I hit Rates API
+    Then status code <statusCode> is returned
+    And error message "<errorMessage>" is returned
+
+    Examples:
+      | baseCurrencyInParameter | statusCode | errorMessage                     |
+      | AGH                     | 400        | Base 'AGH' is not supported.     |
+      | GBP,USD                 | 400        | Base 'GBP,USD' is not supported. |
+      | GBP,AGH                 | 400        | Base 'GBP,AGH' is not supported. |
