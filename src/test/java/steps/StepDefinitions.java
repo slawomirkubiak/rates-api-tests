@@ -96,7 +96,6 @@ public class StepDefinitions {
     @And("error message {string} is returned")
     public void errorMessageErrorMessageIsReturned(String errorMessage) {
         if (errorMessage.contains(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING)) {
-            System.out.println("Contains string working day");
 
             String trimmedErrorMessage1 = errorMessage.replaceAll(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING, CURRENT_DATE.toString()).replaceAll("[()]", ""); //workaround to trim parenthesis as they're interpreted by regex
             String trimmedErrorMessage2 = errorMessage.replaceAll(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING, PREVIOUS_WORKING_DAY.toString()).replaceAll("[()]", "");
