@@ -47,7 +47,7 @@ Feature: Latest FX rates endpoint
 
     Examples:
       | baseCurrencyInParameter | symbols           | statusCode | baseCurrencyInResponse | rates                                    | date                                   |
-      | USD                     | GBP               | 200        | USD                    | GBP                                      | (current date or previous working day) |
+      | EUR                     | GBP               | 200        | EUR                    | GBP                                      | (current date or previous working day) |
       | SEK                     | GBP,CZK,NOK       | 200        | SEK                    | GBP,CZK,NOK                              | (current date or previous working day) |
       | DKK                     | (empty parameter) | 200        | DKK                    | (all currencies including base currency) | (current date or previous working day) |
       | (empty parameter)       | HUF               | 200        | EUR                    | HUF                                      | (current date or previous working day) |
