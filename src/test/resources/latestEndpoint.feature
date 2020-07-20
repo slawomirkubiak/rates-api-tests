@@ -45,6 +45,7 @@ Feature: Latest FX rates endpoint
 
     Examples:
       | symbols         | statusCode | errorMessage                                                                           |
+      | EUR             | 400        | Symbols 'EUR' are invalid for date (current date or previous working day).             |
       | HSB             | 400        | Symbols 'HSB' are invalid for date (current date or previous working day).             |
       | USD,ABC         | 400        | Symbols 'USD,ABC' are invalid for date (current date or previous working day).         |
       | HSB,ABC,CMB,SOC | 400        | Symbols 'HSB,ABC,CMB,SOC' are invalid for date (current date or previous working day). |
