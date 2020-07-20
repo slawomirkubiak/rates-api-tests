@@ -101,3 +101,19 @@ Feature: Latest FX rates endpoint
       | RUB,CNY,ABC             | (empty parameter) | 400        | Base 'RUB,CNY,ABC' is not supported.                                               |
       | (empty parameter)       | CMB               | 400        | Symbols 'CMB' are invalid for date (current date or previous working day).         |
       | (empty parameter)       | EUR,GBP,MSI       | 400        | Symbols 'EUR,GBP,MSI' are invalid for date (current date or previous working day). |
+
+  @latest @negative-tests @base @symbols
+  Scenario Outline: I hit latest FX rates endpoint of Rates API with invalid base and symbols parameters
+    When I set endpoint to latest
+    And I set base parameter to "<baseCurrencyInParameter>"
+    And I set symbols parameter to "<symbols>"
+    And I hit Rates API
+    Then status code <statusCode> is returned
+    And error message "<errorMessage>" is returned
+
+    Examples:
+      | baseCurrencyInParameter | symbols     | statusCode | errorMessage                         |
+      | CRT                     | LCD         | 400        | Base 'CRT' is not supported.         |
+      | CRT                     | IPS,MVA,PVA | 400        | Base 'CRT' is not supported.         |
+      | CRT,LCD,IPS             | PVA         | 400        | Base 'CRT,LCD,IPS' is not supported. |
+      | CRT,LCD,IPS             | LCD,MVA,PVA | 400        | Base 'CRT,LCD,IPS' is not supported. |
