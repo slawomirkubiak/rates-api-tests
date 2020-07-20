@@ -34,6 +34,24 @@ Feature: Latest FX rates endpoint
       | GBP                     | 200        | GBP                    | (all currencies including base currency) | 1.0                 | (current date or previous working day) |
       | (empty parameter)       | 200        | EUR                    | (all currencies)                         | (not present)       | (current date or previous working day) |
 
+  @latest @positive-tests @base @symbols
+  Scenario Outline: I hit latest FX rates endpoint of Rates API with valid base and symbols parameters
+    When I set endpoint to latest
+    And I set base parameter to "<baseCurrencyInParameter>"
+    And I set symbols parameter to "<symbols>"
+    And I hit Rates API
+    Then status code <statusCode> is returned
+    And base currency "<baseCurrencyInResponse>" is returned
+    And numerical values of exchange rate are returned for "<rates>"
+    And date "<date>" is returned
+
+    Examples:
+      | baseCurrencyInParameter | symbols           | statusCode | baseCurrencyInResponse | rates                                    | date                                   |
+      | USD                     | GBP               | 200        | USD                    | GBP                                      | (current date or previous working day) |
+      | SEK                     | GBP,CZK,NOK       | 200        | SEK                    | GBP,CZK,NOK                              | (current date or previous working day) |
+      | DKK                     | (empty parameter) | 200        | DKK                    | (all currencies including base currency) | (current date or previous working day) |
+      | (empty parameter)       | HUF               | 200        | EUR                    | HUF                                      | (current date or previous working day) |
+      | (empty parameter)       | GBP,CHF,HKD       | 200        | EUR                    | GBP,CHF,HKD                              | (current date or previous working day) |
 
   @latest @negative-tests @symbols
   Scenario Outline: I hit latest FX rates endpoint of Rates API with invalid symbol parameter
