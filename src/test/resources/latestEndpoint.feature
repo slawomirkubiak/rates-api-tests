@@ -81,3 +81,23 @@ Feature: Latest FX rates endpoint
       | AGH                     | 400        | Base 'AGH' is not supported.     |
       | GBP,USD                 | 400        | Base 'GBP,USD' is not supported. |
       | GBP,AGH                 | 400        | Base 'GBP,AGH' is not supported. |
+
+  @latest @negative-tests @base @symbols
+  Scenario Outline: I hit latest FX rates endpoint of Rates API with invalid base or symbols parameter
+    When I set endpoint to latest
+    And I set base parameter to "<baseCurrencyInParameter>"
+    And I set symbols parameter to "<symbols>"
+    And I hit Rates API
+    Then status code <statusCode> is returned
+    And error message "<errorMessage>" is returned
+
+    Examples:
+      | baseCurrencyInParameter | symbols           | statusCode | errorMessage                                                                       |
+      | AGH                     | GBP               | 400        | Base 'AGH' is not supported.                                                       |
+      | JPY,AGH                 | GBP,CZK,NOK       | 400        | Base 'JPY,AGH' is not supported.                                                   |
+      | ISK                     | JSW               | 400        | Symbols 'JSW' are invalid for date (current date or previous working day).         |
+      | SGD                     | KGH,GBP,INR       | 400        | Symbols 'KGH,GBP,INR' are invalid for date (current date or previous working day). |
+      | CDD                     | (empty parameter) | 400        | Base 'CDD' is not supported.                                                       |
+      | RUB,CNY,ABC             | (empty parameter) | 400        | Base 'RUB,CNY,ABC' is not supported.                                               |
+      | (empty parameter)       | CMB               | 400        | Symbols 'CMB' are invalid for date (current date or previous working day).         |
+      | (empty parameter)       | EUR,GBP,MSI       | 400        | Symbols 'EUR,GBP,MSI' are invalid for date (current date or previous working day). |
