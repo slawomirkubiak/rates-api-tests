@@ -34,6 +34,9 @@ public class StepDefinitions {
             "MXN", "CZK", "SGD", "THB", "HRK", "MYR", "NOK", "CNY", "BGN", "PHP", "SEK", "PLN", "ZAR",
             "CAD", "ISK", "BRL", "RON", "NZD", "TRY", "JPY", "RUB", "KRW", "USD", "HUF", "AUD");
     private List<String> expectedCurrencies;
+    private static String CURRENT_OR_PREVIOUS_WORKING_DAY_STRING = "(current date or previous working day)";
+    private static LocalDate CURRENT_DATE = LocalDate.now();
+    private static LocalDate PREVIOUS_WORKING_DAY = TestHelpers.getPreviousWorkingDay(LocalDate.now());
 
     @Before
     public void setupRequest() {
@@ -80,7 +83,23 @@ public class StepDefinitions {
 
     @And("error message {string} is returned")
     public void errorMessageErrorMessageIsReturned(String errorMessage) {
-        assertEquals(response.path("error"), errorMessage);
+        if (errorMessage.contains(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING)) {
+            System.out.println("Contains string working day");
+
+            String trimmedErrorMessage1 = errorMessage.replaceAll(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING, CURRENT_DATE.toString()).replaceAll("[()]", ""); //workaround to trim parenthesis as they're interpreted by regex
+            String trimmedErrorMessage2 = errorMessage.replaceAll(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING, PREVIOUS_WORKING_DAY.toString()).replaceAll("[()]", "");
+            String errorFromApi = response.path("error");
+
+            assertThat(errorFromApi, is(
+                    anyOf(
+                            equalTo(trimmedErrorMessage1),
+                            equalTo(trimmedErrorMessage2)
+                    )
+            ));
+
+        } else {
+            assertEquals(response.path("error"), errorMessage);
+        }
     }
 
     @When("I set endpoint to latest")
@@ -110,13 +129,12 @@ public class StepDefinitions {
 
     @And("date {string} is returned")
     public void dateDateIsReturned(String date) {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate dateFromResponse = LocalDate.parse(response.then().extract().response().path("date"));
+        LocalDate dateFromApi = LocalDate.parse(response.then().extract().response().path("date"));
 
-        if (date.equals("(current date or previous working day)")) {
-            assertThat(dateFromResponse, is(anyOf(equalTo(currentDate), equalTo(TestHelpers.getPreviousWorkingDay(LocalDate.now())))));
+        if (date.equals(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING)) {
+            assertThat(dateFromApi, is(anyOf(equalTo(CURRENT_DATE), equalTo(PREVIOUS_WORKING_DAY))));
         } else {
-            assertThat(dateFromResponse, equalTo(LocalDate.parse(date)));
+            assertThat(dateFromApi, equalTo(CURRENT_DATE));
         }
     }
 
