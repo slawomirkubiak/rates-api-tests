@@ -1,6 +1,6 @@
 Feature: Latest FX rates endpoint
 
-  @latest @positive-tests @symbols
+  @latest-rates @positive-tests @symbols
   Scenario Outline: I hit latest FX rates endpoint of Rates API with valid symbol parameter
     When I set endpoint to latest
     And I set symbols parameter to "<symbols>"
@@ -17,7 +17,7 @@ Feature: Latest FX rates endpoint
       | (no symbol parameter) | 200        | EUR                    | (all currencies)    | (current date or previous working day) |
       | (empty parameter)     | 200        | EUR                    | (all currencies)    | (current date or previous working day) |
 
-  @latest @positive-tests @base
+  @latest-rates @positive-tests @base
   Scenario Outline: I hit latest FX rates endpoint of Rates API with valid base parameter
     When I set endpoint to latest
     And I set base parameter to "<baseCurrencyInParameter>"
@@ -34,7 +34,7 @@ Feature: Latest FX rates endpoint
       | GBP                     | 200        | GBP                    | (all currencies including base currency) | 1.0                 | (current date or previous working day) |
       | (empty parameter)       | 200        | EUR                    | (all currencies)                         | (not present)       | (current date or previous working day) |
 
-  @latest @positive-tests @base @symbols
+  @latest-rates @positive-tests @base @symbols
   Scenario Outline: I hit latest FX rates endpoint of Rates API with valid base and symbols parameters
     When I set endpoint to latest
     And I set base parameter to "<baseCurrencyInParameter>"
@@ -53,7 +53,7 @@ Feature: Latest FX rates endpoint
       | (empty parameter)       | HUF               | 200        | EUR                    | HUF                                      | (current date or previous working day) |
       | (empty parameter)       | GBP,CHF,HKD       | 200        | EUR                    | GBP,CHF,HKD                              | (current date or previous working day) |
 
-  @latest @negative-tests @symbols
+  @latest-rates @negative-tests @symbols
   Scenario Outline: I hit latest FX rates endpoint of Rates API with invalid symbol parameter
     When I set endpoint to latest
     And I set symbols parameter to "<symbols>"
@@ -68,7 +68,7 @@ Feature: Latest FX rates endpoint
       | USD,ABC         | 400        | Symbols 'USD,ABC' are invalid for date (current date or previous working day).         |
       | HSB,ABC,CMB,SOC | 400        | Symbols 'HSB,ABC,CMB,SOC' are invalid for date (current date or previous working day). |
 
-  @latest @negative-tests @base
+  @latest-rates @negative-tests @base
   Scenario Outline: I hit latest FX rates endpoint of Rates API with invalid base parameter
     When I set endpoint to latest
     And I set base parameter to "<baseCurrencyInParameter>"
@@ -82,7 +82,7 @@ Feature: Latest FX rates endpoint
       | GBP,USD                 | 400        | Base 'GBP,USD' is not supported. |
       | GBP,AGH                 | 400        | Base 'GBP,AGH' is not supported. |
 
-  @latest @negative-tests @base @symbols
+  @latest-rates @negative-tests @base @symbols
   Scenario Outline: I hit latest FX rates endpoint of Rates API with invalid base or symbols parameter
     When I set endpoint to latest
     And I set base parameter to "<baseCurrencyInParameter>"
@@ -102,7 +102,7 @@ Feature: Latest FX rates endpoint
       | (empty parameter)       | CMB               | 400        | Symbols 'CMB' are invalid for date (current date or previous working day).         |
       | (empty parameter)       | EUR,GBP,MSI       | 400        | Symbols 'EUR,GBP,MSI' are invalid for date (current date or previous working day). |
 
-  @latest @negative-tests @base @symbols
+  @latest-rates @negative-tests @base @symbols
   Scenario Outline: I hit latest FX rates endpoint of Rates API with invalid base and symbols parameters
     When I set endpoint to latest
     And I set base parameter to "<baseCurrencyInParameter>"

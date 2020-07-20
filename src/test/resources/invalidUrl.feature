@@ -8,7 +8,8 @@ Feature: Invalid URL syntax
     And error message "<errorMessage>" is returned
 
     Examples:
-      | urlString   | statusCode | errorMessage                                             |
-      | (no string) | 400        | time data 'api' does not match format '%Y-%m-%d'         |
-      | 2019-Dec-29 | 400        | time data '2019-Dec-29' does not match format '%Y-%m-%d' |
-      | sampleDate  | 400        | time data 'sampleDate' does not match format '%Y-%m-%d'  |
+      | urlString         | statusCode | errorMessage                                                   |
+      | (no string)       | 400        | time data 'api' does not match format '%Y-%m-%d'               |
+      | 2019-Dec-29       | 400        | time data '2019-Dec-29' does not match format '%Y-%m-%d'       |
+      | 29-12-2019        | 400        | time data '29-12-2019' does not match format '%Y-%m-%d'        |
+      | 1stOfDecember2001 | 400        | time data '1stOfDecember2001' does not match format '%Y-%m-%d' |
