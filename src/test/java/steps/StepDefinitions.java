@@ -25,12 +25,21 @@ import static org.junit.Assert.assertNull;
 public class StepDefinitions {
 
     private RequestSpecification request;
+
+    public String getUrlString() {
+        return urlString;
+    }
+
+    public void setUrlString(String urlString) {
+        this.urlString = urlString;
+    }
+
     private String urlString;
     private String fullUrl;
     private Response response;
-    private static int TIMEOUT = 3000;
+    private final int TIMEOUT = 3000;
 
-    private static String DEFAULT_BASE = "EUR"; //default value in API
+    private final String DEFAULT_BASE = "EUR"; //default value in API
     private String base = DEFAULT_BASE;
     private String date;
 
@@ -50,18 +59,27 @@ public class StepDefinitions {
         this.date = date;
     }
 
-    private String apiUrl = "https://api.ratesapi.io/api";
+    private final String API_URL = "https://api.ratesapi.io/api";
     private LinkedList<String> ALL_CURRENCIES = new LinkedList<>(Arrays.asList("GBP", "HKD", "IDR", "ILS", "DKK", "INR", "CHF",
             "MXN", "CZK", "SGD", "THB", "HRK", "MYR", "NOK", "CNY", "BGN", "PHP", "SEK", "PLN", "ZAR",
             "CAD", "ISK", "BRL", "RON", "NZD", "TRY", "JPY", "RUB", "KRW", "USD", "HUF", "AUD", "EUR"));
-    private static String CURRENT_OR_PREVIOUS_WORKING_DAY_STRING = "(current date or previous working day)";
-    private static String THE_SAME_DATE_AS_IN_REQUEST_OR_PREVIOUS_WORKING_DAY = "(the same date as in request or previous working day)";
-    private static LocalDate CURRENT_DATE = LocalDate.now();
-    private static LocalDate PREVIOUS_WORKING_DAY = TestHelpers.getPreviousWorkingDay(LocalDate.now());
+    private final String CURRENT_OR_PREVIOUS_WORKING_DAY_STRING = "(current date or previous working day)";
+    private final String THE_SAME_DATE_AS_IN_REQUEST_OR_PREVIOUS_WORKING_DAY = "(the same date as in request or previous working day)";
+    private final LocalDate CURRENT_DATE = LocalDate.now();
+    private final LocalDate PREVIOUS_WORKING_DAY = TestHelpers.getPreviousWorkingDay(LocalDate.now());
 
     @Before
     public void setupRequest() {
+        setupConnectionWithApi();
+    }
 
+
+    @When("I set {string} in URL")
+    public void iPutUrlStringInURL(String urlString) {
+        replaceEmptyValueDescriptionWithRealEmptyValueWhenNeeded(urlString); //replace empty value description from feature file with real empty value
+    }
+
+    private void setupConnectionWithApi() {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RestAssured.config = RestAssured
                 .config()
@@ -76,9 +94,8 @@ public class StepDefinitions {
                 .log().all(); //log all request details
     }
 
-    @When("I set {string} in URL")
-    public void iPutUrlStringInURL(String urlString) {
-        this.urlString = urlString.equals("(no string)") ? "" : urlString; //replace empty value description from feature file with real empty value
+    private void replaceEmptyValueDescriptionWithRealEmptyValueWhenNeeded(String urlString) {
+        setUrlString(urlString.equals("(no string)") ? "" : urlString);
     }
 
     @When("I set symbols parameter to {string}")
@@ -92,7 +109,7 @@ public class StepDefinitions {
 
     @And("I hit Rates API")
     public void hitRatesAPI() {
-        fullUrl = apiUrl + "/" + urlString;
+        fullUrl = API_URL + "/" + getUrlString();
         response = request.when().get(fullUrl);
     }
 
@@ -105,7 +122,7 @@ public class StepDefinitions {
     public void errorMessageErrorMessageIsReturned(String errorMessage) {
         if (errorMessage.contains(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING)) {
 
-            String trimmedErrorMessage1 = errorMessage.replaceAll(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING, CURRENT_DATE.toString()).replaceAll("[()]", ""); //workaround to trim parenthesis as they're interpreted by regex
+            String trimmedErrorMessage1 = errorMessage.replaceAll(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING, CURRENT_DATE.toString()).replaceAll("[()]", ""); // workaround to trim parenthesis as they're interpreted by regex
             String trimmedErrorMessage2 = errorMessage.replaceAll(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING, PREVIOUS_WORKING_DAY.toString()).replaceAll("[()]", "");
             String errorFromApi = response.path("error");
 
@@ -118,7 +135,7 @@ public class StepDefinitions {
         } else if (errorMessage.contains(THE_SAME_DATE_AS_IN_REQUEST_OR_PREVIOUS_WORKING_DAY)) {
             LocalDate dateFromUrl = LocalDate.parse(getDateFromUrl());
 
-            String trimmedErrorMessage1 = errorMessage.replaceAll(THE_SAME_DATE_AS_IN_REQUEST_OR_PREVIOUS_WORKING_DAY, getDateFromUrl()).replaceAll("[()]", ""); //workaround to trim parenthesis as they're interpreted by regex
+            String trimmedErrorMessage1 = errorMessage.replaceAll(THE_SAME_DATE_AS_IN_REQUEST_OR_PREVIOUS_WORKING_DAY, getDateFromUrl()).replaceAll("[()]", ""); // workaround to trim parenthesis as they're interpreted by regex
             String trimmedErrorMessage2 = errorMessage.replaceAll(THE_SAME_DATE_AS_IN_REQUEST_OR_PREVIOUS_WORKING_DAY, TestHelpers.getPreviousWorkingDay(dateFromUrl).toString()).replaceAll("[()]", "");
             String errorFromApi = response.path("error");
 
@@ -135,7 +152,7 @@ public class StepDefinitions {
 
     @When("I set endpoint to latest")
     public void iSetEndpointToLatest() {
-        urlString = "latest";
+        setUrlString("latest");
     }
 
     @And("base currency {string} is returned")
@@ -205,14 +222,14 @@ public class StepDefinitions {
 
     @When("I set endpoint to past")
     public void iSetEndpointToPast() {
-        urlString = "";
+        setUrlString("");
     }
 
     @And("I set date in URL to {string}")
     public void iSetDateInURLTo(String date) {
 
         if (!date.equals("(empty parameter)")) { //skip the logic if "date" parameter shouldn't be set
-            urlString = date;
+            setUrlString(date);
             setDateFromUrl(date);
         }
     }
