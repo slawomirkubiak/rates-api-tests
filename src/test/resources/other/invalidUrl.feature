@@ -1,6 +1,6 @@
 Feature: Invalid URL syntax
 
-  @invalid-url @negative-tests
+  @invalid-url @negative-scenario
   Scenario Outline: I hit Rates API with incorrect endpoint URL
     When I set "<urlString>" in URL
     And I hit Rates API

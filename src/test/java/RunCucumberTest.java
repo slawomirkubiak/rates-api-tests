@@ -6,7 +6,8 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         plugin = {"pretty", "html:target/cucumber"},
         features = {"src/test/resources"},
-        glue = {"steps"}
+        glue = {"steps"},
+        tags = "@positive-scenario"
 )
 public class RunCucumberTest {
 
