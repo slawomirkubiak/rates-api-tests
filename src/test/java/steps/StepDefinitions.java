@@ -28,10 +28,11 @@ public class StepDefinitions {
     private String urlString;
     private String fullUrl;
     private Response response;
-    private static int TIMEOUT = 2000;
+    private static int TIMEOUT = 3000;
 
     private static String DEFAULT_BASE = "EUR"; //default value in API
     private String base = DEFAULT_BASE;
+    private String date;
 
     public String getBase() {
         return base;
@@ -41,11 +42,20 @@ public class StepDefinitions {
         this.base = base;
     }
 
+    public String getDateFromUrl() {
+        return date;
+    }
+
+    public void setDateFromUrl(String date) {
+        this.date = date;
+    }
+
     private String apiUrl = "https://api.ratesapi.io/api";
     private LinkedList<String> ALL_CURRENCIES = new LinkedList<>(Arrays.asList("GBP", "HKD", "IDR", "ILS", "DKK", "INR", "CHF",
             "MXN", "CZK", "SGD", "THB", "HRK", "MYR", "NOK", "CNY", "BGN", "PHP", "SEK", "PLN", "ZAR",
             "CAD", "ISK", "BRL", "RON", "NZD", "TRY", "JPY", "RUB", "KRW", "USD", "HUF", "AUD", "EUR"));
     private static String CURRENT_OR_PREVIOUS_WORKING_DAY_STRING = "(current date or previous working day)";
+    private static String THE_SAME_DATE_AS_IN_REQUEST_OR_PREVIOUS_WORKING_DAY = "(the same date as in request or previous working day)";
     private static LocalDate CURRENT_DATE = LocalDate.now();
     private static LocalDate PREVIOUS_WORKING_DAY = TestHelpers.getPreviousWorkingDay(LocalDate.now());
 
@@ -64,7 +74,6 @@ public class StepDefinitions {
         request = given()
                 .urlEncodingEnabled(false) //turn off replacing comma to %2C etc.
                 .log().all(); //log all request details
-
     }
 
     @When("I set {string} in URL")
@@ -79,7 +88,6 @@ public class StepDefinitions {
             symbols = symbols.equals("(no symbol parameter)") ? "" : symbols; // replace empty symbol value description from feature file with real empty value
             request = request.param("symbols", symbols);
         }
-
     }
 
     @And("I hit Rates API")
@@ -107,7 +115,19 @@ public class StepDefinitions {
                             equalTo(trimmedErrorMessage2)
                     )
             ));
+        } else if (errorMessage.contains(THE_SAME_DATE_AS_IN_REQUEST_OR_PREVIOUS_WORKING_DAY)) {
+            LocalDate dateFromUrl = LocalDate.parse(getDateFromUrl());
 
+            String trimmedErrorMessage1 = errorMessage.replaceAll(THE_SAME_DATE_AS_IN_REQUEST_OR_PREVIOUS_WORKING_DAY, getDateFromUrl()).replaceAll("[()]", ""); //workaround to trim parenthesis as they're interpreted by regex
+            String trimmedErrorMessage2 = errorMessage.replaceAll(THE_SAME_DATE_AS_IN_REQUEST_OR_PREVIOUS_WORKING_DAY, TestHelpers.getPreviousWorkingDay(dateFromUrl).toString()).replaceAll("[()]", "");
+            String errorFromApi = response.path("error");
+
+            assertThat(errorFromApi, is(
+                    anyOf(
+                            equalTo(trimmedErrorMessage1),
+                            equalTo(trimmedErrorMessage2)
+                    )
+            ));
         } else {
             assertEquals(errorMessage, response.path("error"));
         }
@@ -147,15 +167,17 @@ public class StepDefinitions {
 
 
     @And("date {string} is returned")
-    public void dateDateIsReturned(String date) {
+    public void dateDateIsReturned(String expectedDateFromApi) {
         LocalDate dateFromApi = LocalDate.parse(response.then().extract().response().path("date"));
 
-        if (date.equals(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING)) {
+        if (expectedDateFromApi.equals(CURRENT_OR_PREVIOUS_WORKING_DAY_STRING)) {
             assertThat(dateFromApi, is(anyOf(equalTo(CURRENT_DATE), equalTo(PREVIOUS_WORKING_DAY))));
         } else {
-            assertThat(dateFromApi, equalTo(CURRENT_DATE));
+            LocalDate dateFromUrl = LocalDate.parse(getDateFromUrl());
+            assertThat(dateFromApi, is(anyOf(equalTo(dateFromUrl), equalTo(TestHelpers.getPreviousWorkingDay(dateFromUrl)))));
         }
     }
+
 
     @And("I set base parameter to {string}")
     public void iSetBaseParameterTo(String baseCurrencyInParameter) {
@@ -178,6 +200,20 @@ public class StepDefinitions {
             assertNull(response.path("rates." + getBase()));
         } else {
             assertEquals(new BigDecimal(expectedBaseCurrencyFxRate), response.path("rates." + baseCurrencyInResponse));
+        }
+    }
+
+    @When("I set endpoint to past")
+    public void iSetEndpointToPast() {
+        urlString = "";
+    }
+
+    @And("I set date in URL to {string}")
+    public void iSetDateInURLTo(String date) {
+
+        if (!date.equals("(empty parameter)")) { //skip the logic if "date" parameter shouldn't be set
+            urlString = date;
+            setDateFromUrl(date);
         }
     }
 }
