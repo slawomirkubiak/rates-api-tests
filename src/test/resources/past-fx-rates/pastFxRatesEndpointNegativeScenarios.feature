@@ -34,7 +34,7 @@ Feature: Past FX rates endpoint - negative scenarios
       | (empty parameter) | (empty parameter)       | GBP,CHF,HKD       | 400        | time data 'api' does not match format '%Y-%m-%d'  |
 
   @past-rates @negative-scenario @date @symbols
-  Scenario Outline: I hit past FX rates endpoint of Rates API with valid date, invalid symbol parameter
+  Scenario Outline: I hit past FX rates endpoint of Rates API with valid date, invalid symbols parameter
     When I set endpoint to past
     And I set date in URL to "<date>"
     And I set symbols parameter to "<symbols>"

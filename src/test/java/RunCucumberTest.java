@@ -4,10 +4,10 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        plugin = {"pretty", "html:target/cucumber"},
+        plugin = {"pretty", "html:target/cucumber-report.html"},
         features = {"src/test/resources"},
         glue = {"steps"},
-        tags = "@positive-scenario"
+        tags = "@positive-scenario or @negative-scenario"
 )
 public class RunCucumberTest {
 

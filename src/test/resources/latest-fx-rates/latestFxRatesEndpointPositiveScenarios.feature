@@ -31,7 +31,6 @@ Feature: Latest FX rates endpoint - positive scenarios
     Examples:
       | baseCurrencyInParameter | statusCode | baseCurrencyInResponse | rates                                    | rateForBaseCurrency | date                                   |
       | USD                     | 200        | USD                    | (all currencies including base currency) | 1.0                 | (current date or previous working day) |
-      | GBP                     | 200        | GBP                    | (all currencies including base currency) | 1.0                 | (current date or previous working day) |
       | (empty parameter)       | 200        | EUR                    | (all currencies)                         | (not present)       | (current date or previous working day) |
 
   @latest-rates @positive-scenario @base @symbols

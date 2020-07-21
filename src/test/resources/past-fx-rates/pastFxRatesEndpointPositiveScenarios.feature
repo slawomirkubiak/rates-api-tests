@@ -17,7 +17,7 @@ Feature: Past FX rates endpoint - positive scenarios
       | 2030-07-19 | 200        | EUR                    | (all currencies)                                                                                            | (current date or previous working day)                |
 
   @past-rates @positive-scenario @symbols
-  Scenario Outline: I hit past FX rates endpoint of Rates API with valid date and symbol parameter
+  Scenario Outline: I hit past FX rates endpoint of Rates API with valid date and symbols parameter
     When I set endpoint to past
     And I set date in URL to "<date>"
     And I set symbols parameter to "<symbols>"
@@ -31,7 +31,6 @@ Feature: Past FX rates endpoint - positive scenarios
       | date       | symbols               | statusCode | baseCurrencyInResponse | rates               | dateInResponse                                        |
       | 2020-01-01 | USD                   | 200        | EUR                    | USD                 | (the same date as in request or previous working day) |
       | 2010-01-01 | USD,GBP,CHF,CZK,SEK   | 200        | EUR                    | USD,GBP,CHF,CZK,SEK | (the same date as in request or previous working day) |
-      | 2030-12-31 | (no symbol parameter) | 200        | EUR                    | (all currencies)    | (current date or previous working day)                |
       | 2040-12-31 | (empty parameter)     | 200        | EUR                    | (all currencies)    | (current date or previous working day)                |
 
   @past-rates @positive-scenario @base
