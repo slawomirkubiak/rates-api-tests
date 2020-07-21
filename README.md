@@ -22,7 +22,7 @@ Following AC were provided:
 | 6 | As above | A future date is provided in the url | An automated test suite should run which will validate that the response matches the current date |
 
 ## Test cases
-All designed test cases were gathered in file [rates-api-scenarios.xlsx](src\test\resources\docs\rates-api-scenarios.xlsx)
+All designed test cases were gathered in file [rates-api-scenarios.xlsx](https://github.com/slawomirkubiak/rates-api-tests/blob/master/src/test/resources/docs/rates-api-scenarios.xlsx)
 
 
 # Running tests
@@ -31,13 +31,13 @@ All designed test cases were gathered in file [rates-api-scenarios.xlsx](src\tes
 - running selected scenarios by tags:
 
   - update `tags` property in file `src\test\java\RunCucumberTest.java`:
-  <pre><code> @CucumberOptions(
+  <pre> @CucumberOptions(
         plugin = {"pretty", "html:target/cucumber-report.html"},
         features = {"src/test/resources"},
         glue = {"steps"},
-        tags = "@positive-scenario or @negative-scenario"
-  </pre></code>
-    
+        tags = "@positive-scenario or @negative-scenario")
+  </pre>
+
   - run in cmd `mvn test -Dcucumber.filter.tags="@positive-scenario or @negative-scenario`
 
 ## Tags
